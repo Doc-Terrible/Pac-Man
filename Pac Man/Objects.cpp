@@ -37,4 +37,12 @@ void Wall::draw(int red, int green, int blue){
 		al_draw_line(X * 20 + 4, Y * 20, X * 20 + 4, Y * 20 + 20, al_map_rgb(0, 0, 255), 2);
 		al_draw_line(X * 20 + 16, Y * 20, X * 20 + 16, Y * 20 + 20, al_map_rgb(0, 0, 255), 2);
 	}
+	else if (ID == BARRIER) {
+		al_draw_line(X * 20, Y * 20 + 5, X * 20 + 20, Y * 20 + 5, al_map_rgb(0, 0, 255), 2);
+		al_draw_line(X * 20, Y * 20 + 15, X * 20 + 20, Y * 20 + 15, al_map_rgb(0, 0, 255), 2);
+		al_draw_line(X * 20, Y * 20 + 10, X * 20 + 20, Y * 20 + 10, al_map_rgb(red, green, blue), 8);
+	}
+	else if (ID == FILLER) {
+		al_draw_filled_rectangle(X * 20 + 10, Y * 20 + 10, X * 20 + 30, Y * 20 + 30, al_map_rgb(red,green,blue));
+	}
 }

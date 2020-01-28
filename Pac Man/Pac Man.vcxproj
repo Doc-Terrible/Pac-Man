@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ghost.cpp" />
     <ClCompile Include="Objects.cpp" />
     <ClCompile Include="Pac Man.cpp" />
     <ClCompile Include="Rainbow.cpp" />
@@ -163,6 +164,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ghost.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="Objects.h" />
     <ClInclude Include="Rainbow.h" />
