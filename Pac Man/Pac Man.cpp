@@ -45,6 +45,9 @@ int MAP[36][36]{
 	V ,CP,P ,P ,CP,P ,P ,P ,CP,P ,P ,CP,P ,P ,CP,P ,P ,P ,P ,PP,P ,P ,P ,P ,CP,P ,P ,CP,P ,P ,P ,CP,P ,P ,CP,V ,
 	BL,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,BR,
 };
+/* collision */
+bool TURN(int Xpos, int Ypos, int direction);
+bool COLLISION(int Xpos, int Ypos, int direction);
 
 int main(){
 	srand(time(NULL));
@@ -133,7 +136,7 @@ int main(){
 
 	std::vector<Ghost*> Ghosts;
 	std::vector<Ghost*>::iterator iter2;
-	Ghost* NewGhost = new Ghost((1 * 20) + 10, (1 * 20) + 10, 'B');
+	Ghost* NewGhost = new Ghost((34 * 20) + 10, (1 * 20) + 10, 'B');
 	Ghosts.push_back(NewGhost);
 
 	al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -151,7 +154,7 @@ int main(){
 		if (ev.type == ALLEGRO_EVENT_TIMER) {
 			if ((X - 10) % 20 == 0 && (Y - 10) % 20 == 0) {
 				if (MAP[(Y - 10) / 20][(X - 10) / 20] == CP || MAP[(Y - 10) / 20][(X - 10) / 20] == CE) {
-					/*E*/if (key[up] && !(MAP[((Y - 10) / 20) - 1][(X - 10) / 20] >= V && MAP[((Y - 10) / 20) - 1][(X - 10) / 20] <= B)) {
+					/*E*/if (key[up] && TURN(X, Y, up)) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -159,7 +162,7 @@ int main(){
 						move[up] = true;
 						move2[up] = true;
 					}
-					else if (key[down] && !(MAP[((Y - 10) / 20) + 1][(X - 10) / 20] >= V && MAP[((Y - 10) / 20) + 1][(X - 10) / 20] <= B)) {
+					else if (key[down] && TURN(X, Y, down)) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -167,7 +170,7 @@ int main(){
 						move[down] = true;
 						move2[down] = true;
 					}
-					else if (key[left] && !(MAP[(Y - 10) / 20][((X - 10) / 20) - 1] >= V && MAP[(Y - 10) / 20][((X - 10) / 20) - 1] <= B)) {
+					else if (key[left] && TURN(X, Y, left)) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -175,7 +178,7 @@ int main(){
 						move[left] = true;
 						move2[left] = true;
 					}
-					else if (key[right] && !(MAP[(Y - 10) / 20][((X - 10) / 20) + 1] >= V && MAP[(Y - 10) / 20][((X - 10) / 20) + 1] <= B)) {
+					else if (key[right] && TURN(X, Y, right)) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -196,12 +199,7 @@ int main(){
 			for (iter2 = Ghosts.begin(); iter2 != Ghosts.end(); iter2++) {
 				if (((*iter2)->GetX() - 10) % 20 == 0 && ((*iter2)->GetY() - 10) % 20 == 0) {
 					if (MAP[((*iter2)->GetY() - 10) / 20][((*iter2)->GetX() - 10) / 20] == CP || MAP[((*iter2)->GetY() - 10) / 20][((*iter2)->GetX() - 10) / 20] == CE) {
-						bool turn[4];
-						/*E*/if (!(MAP[(((*iter2)->GetY() - 10) / 20) - 1][((*iter2)->GetX() - 10) / 20] >= V && MAP[(((*iter2)->GetY() - 10) / 20) - 1][((*iter2)->GetX() - 10) / 20] <= BR))turn[up] = true;
-						else if (!(MAP[(((*iter2)->GetY() - 10) / 20) + 1][((*iter2)->GetX() - 10) / 20] >= V && MAP[(((*iter2)->GetY() - 10) / 20) + 1][((*iter2)->GetX() - 10) / 20] <= B))turn[down] = true;
-						else if (!(MAP[((*iter2)->GetY() - 10) / 20][(((*iter2)->GetX() - 10) / 20) - 1] >= V && MAP[((*iter2)->GetY() - 10) / 20][(((*iter2)->GetX() - 10) / 20) - 1] <= B))turn[left] = true;
-						else if (!(MAP[((*iter2)->GetY() - 10) / 20][(((*iter2)->GetX() - 10) / 20) + 1] >= V && MAP[((*iter2)->GetY() - 10) / 20][(((*iter2)->GetX() - 10) / 20) + 1] <= B))turn[right] = true;
-						(*iter2)->turn(X, Y, turn[up], turn[down], turn[left], turn[right]);
+						(*iter2)->turn(X, Y, TURN((*iter2)->GetX(), (*iter2)->GetY(), up), TURN((*iter2)->GetX(), (*iter2)->GetY(), down), TURN((*iter2)->GetX(), (*iter2)->GetY(), left), TURN((*iter2)->GetX(), (*iter2)->GetY(), right));
 					}
 				}
 				(*iter2)->move();
@@ -210,12 +208,12 @@ int main(){
 			redraw = true;
 		}
 
-		/* collision */
+		/* player collision */
 		if ((X - 10) % 20 == 0 && (Y - 10) % 20 == 0) {
-			/*E*/if (move2[up] && (MAP[((Y - 10) / 20) - 1][(X - 10) / 20] >= V && MAP[((Y - 10) / 20) - 1][(X - 10) / 20] <= B))move2[up] = false;
-			else if (move2[down] && (MAP[((Y - 10) / 20) + 1][(X - 10) / 20] >= V && MAP[((Y - 10) / 20) + 1][(X - 10) / 20] <= B))move2[down] = false;
-			else if (move2[left] && (MAP[(Y - 10) / 20][((X - 10) / 20) - 1] >= V && MAP[(Y - 10) / 20][((X - 10) / 20) - 1] <= B))move2[left] = false;
-			else if (move2[right] && (MAP[(Y - 10) / 20][((X - 10) / 20) + 1] >= V && MAP[(Y - 10) / 20][((X - 10) / 20) + 1] <= B))move2[right] = false;
+			if (COLLISION(X, Y, up))move2[up] = false;
+			if (COLLISION(X, Y, down))move2[down] = false;
+			if (COLLISION(X, Y, left))move2[left] = false;
+			if (COLLISION(X, Y, right))move2[right] = false;
 
 			/*E*/if (MAP[(Y - 10) / 20][(X - 10) / 20] == P) {
 				MAP[(Y - 10) / 20][(X - 10) / 20] = E;
@@ -230,6 +228,13 @@ int main(){
 				power = true;
 				PowerTimer = 420;
 				score += 5;
+			}
+		}
+		
+		/* ghosts collision */
+		for (iter2 = Ghosts.begin(); iter2 != Ghosts.end(); iter2++) {
+			if (((*iter2)->GetX() - 10) % 20 == 0 && ((*iter2)->GetY() - 10) % 20 == 0) {
+				(*iter2)->collision(COLLISION((*iter2)->GetX(), (*iter2)->GetY(), up), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), down), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), left), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), right));
 			}
 		}
 
@@ -309,4 +314,20 @@ int main(){
 		}
 	}
 	al_destroy_display(display);
+}
+
+bool TURN(int Xpos, int Ypos, int direction){
+	/*E*/if (direction == up && !(MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] >= V && MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] <= B))return true;
+	else if (direction == down && !(MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] >= V && MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] <= B))return true;
+	else if (direction == left && !(MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] >= V && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] <= B))return true;
+	else if (direction == right && !(MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] >= V && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] <= B))return true;
+	return false;
+}
+
+bool COLLISION(int Xpos, int Ypos, int direction) {
+	/*E*/if (direction == up && MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] >= V && MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] <= B)return true;
+	else if (direction == down && MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] >= V && MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] <= B)return true;
+	else if (direction == left && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] >= V && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] <= B)return true;
+	else if (direction == right && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] >= V && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] <= B)return true;
+	return false;
 }

@@ -11,19 +11,19 @@
 
 enum THINGS {
 	E, //nothing
+	WL,
+	WR,
 	V, //vertical wall
 	H, //horizontal wall
-	TL, //top left corners
-	TR, //top right corners
-	BL, //bottom left corners
-	BR, //bottom right corners
+	TL, //top left corner
+	TR, //top right corner
+	BL, //bottom left corner
+	BR, //bottom right corner
 	B, //barrier that the ghosts can move though but pac man can't
-	P, //pellets
-	PP, //power pellets
+	P, //pellet
+	PP, //power pellet
 	CP, //
-	CE, //
-	WL,
-	WR
+	CE //
 };
 enum KEYS { up, down, left, right };
 enum WALLS { TOP_LEFT, TOP_RIGHT, VERTICAL, HORIZONTAL, BOTTOM_LEFT, BOTTOM_RIGHT, BARRIER, FILLER };
