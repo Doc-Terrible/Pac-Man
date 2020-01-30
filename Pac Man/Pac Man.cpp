@@ -60,6 +60,7 @@ int main(){
 	ALLEGRO_DISPLAY* display = al_create_display(SCREEN_W, SCREEN_H);
 	ALLEGRO_EVENT_QUEUE* event_queue = al_create_event_queue();
 	ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60);
+	ALLEGRO_BITMAP* PacMan = al_load_bitmap("Pac man.png");
 
 	bool quit = false; //if game ended
 	bool redraw = true;
@@ -68,8 +69,11 @@ int main(){
 	bool key[4] = { false,false,false,false }; //if keys are being pressed
 	bool move[4] = { false,false,false,false }; //if trying to move in direction
 	bool move2[4] = { false,false,false,false }; //if moving in direction
+	bool loop = false;
 	int X = 0; //player X position
 	int Y = 0; //player Y position
+	int cellNUM = 0;
+	int tiker = 2;
 	int Speed = 2; //player speed
 	int PowerTimer = 420; //timer for power pellets
 	int score = 0;
@@ -295,7 +299,11 @@ int main(){
 			for (iter2 = Ghosts.begin(); iter2 != Ghosts.end(); iter2++) {
 				(*iter2)->draw();
 			}
-			al_draw_filled_circle(X, Y, 10, al_map_rgb(255, 255, 0));
+			if (move[up])al_draw_bitmap_region(PacMan, cellNUM * 20, 0, 20, 20, X - 10, Y - 10, NULL);
+			else if (move[down])al_draw_bitmap_region(PacMan, cellNUM * 20, 2, 20, 20, X - 10, Y - 10, NULL);
+			else if (move[left])al_draw_bitmap_region(PacMan, cellNUM * 20, 1, 20, 20, X - 10, Y - 10, NULL);
+			else if (move[right])al_draw_bitmap_region(PacMan, cellNUM * 20, 3, 20, 20, X - 10, Y - 10, NULL);
+			else al_draw_filled_circle(X, Y, 9, al_map_rgb(255, 255, 0));
 			al_flip_display();
 			R1.Change();
 			if (QColor) {
@@ -312,6 +320,12 @@ int main(){
 			}
 			if (R1.getColor('B') == 255)QColor = false;
 		}
+		tiker++;
+		if (tiker == 2)tiker = 0;
+		if (tiker == 0 && loop)cellNUM--;
+		else if (tiker == 0)cellNUM++;
+		if (cellNUM == 8)loop = true;
+		else if (cellNUM == 0)loop = false;
 	}
 	al_destroy_display(display);
 }
