@@ -46,7 +46,6 @@ int MAP[36][36]{
 	BL,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,BR,
 };
 /* collision */
-bool TURN(int Xpos, int Ypos, int direction);
 bool COLLISION(int Xpos, int Ypos, int direction);
 
 int main(){
@@ -56,6 +55,7 @@ int main(){
 	al_init_font_addon();
 	al_init_ttf_addon();
 	al_install_keyboard();
+	al_init_image_addon();
 
 	ALLEGRO_DISPLAY* display = al_create_display(SCREEN_W, SCREEN_H);
 	ALLEGRO_EVENT_QUEUE* event_queue = al_create_event_queue();
@@ -73,7 +73,6 @@ int main(){
 	int X = 0; //player X position
 	int Y = 0; //player Y position
 	int cellNUM = 0;
-	int tiker = 2;
 	int Speed = 2; //player speed
 	int PowerTimer = 420; //timer for power pellets
 	int score = 0;
@@ -158,7 +157,7 @@ int main(){
 		if (ev.type == ALLEGRO_EVENT_TIMER) {
 			if ((X - 10) % 20 == 0 && (Y - 10) % 20 == 0) {
 				if (MAP[(Y - 10) / 20][(X - 10) / 20] == CP || MAP[(Y - 10) / 20][(X - 10) / 20] == CE) {
-					/*E*/if (key[up] && TURN(X, Y, up)) {
+					/*E*/if (key[up] && !COLLISION(X, Y, up)) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -166,7 +165,7 @@ int main(){
 						move[up] = true;
 						move2[up] = true;
 					}
-					else if (key[down] && TURN(X, Y, down)) {
+					else if (key[down] && !COLLISION(X, Y, down)) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -174,7 +173,7 @@ int main(){
 						move[down] = true;
 						move2[down] = true;
 					}
-					else if (key[left] && TURN(X, Y, left)) {
+					else if (key[left] && !COLLISION(X, Y, left)) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -182,7 +181,7 @@ int main(){
 						move[left] = true;
 						move2[left] = true;
 					}
-					else if (key[right] && TURN(X, Y, right)) {
+					else if (key[right] && !COLLISION(X, Y, right)) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -203,7 +202,7 @@ int main(){
 			for (iter2 = Ghosts.begin(); iter2 != Ghosts.end(); iter2++) {
 				if (((*iter2)->GetX() - 10) % 20 == 0 && ((*iter2)->GetY() - 10) % 20 == 0) {
 					if (MAP[((*iter2)->GetY() - 10) / 20][((*iter2)->GetX() - 10) / 20] == CP || MAP[((*iter2)->GetY() - 10) / 20][((*iter2)->GetX() - 10) / 20] == CE) {
-						(*iter2)->turn(X, Y, TURN((*iter2)->GetX(), (*iter2)->GetY(), up), TURN((*iter2)->GetX(), (*iter2)->GetY(), down), TURN((*iter2)->GetX(), (*iter2)->GetY(), left), TURN((*iter2)->GetX(), (*iter2)->GetY(), right));
+						(*iter2)->turn(X, Y, COLLISION((*iter2)->GetX(), (*iter2)->GetY(), up), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), down), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), left), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), right));
 					}
 				}
 				(*iter2)->move();
@@ -290,7 +289,7 @@ int main(){
 				for (int j = 0; j < 36; j++) {
 					if (MAP[j][i] == P || MAP[j][i] == CP)al_draw_filled_circle(i * 20 + 10, j * 20 + 10, 3, al_map_rgb(255, 255, 255));
 					if (MAP[j][i] == PP)al_draw_filled_circle(i * 20 + 10, j * 20 + 10, 6, al_map_rgb(0, 127, 0));
-					if (MAP[j][i] == CP || MAP[j][i] == CE)al_draw_rectangle(i * 20 + 2, j * 20 + 2, i * 20 + 19, j * 20 + 19, al_map_rgb(255, 255, 0), 1);
+					//if (MAP[j][i] == CP || MAP[j][i] == CE)al_draw_rectangle(i * 20 + 2, j * 20 + 2, i * 20 + 19, j * 20 + 19, al_map_rgb(255, 255, 0), 1);
 				}
 			}
 			for (iter = walls.begin(); iter != walls.end(); iter++) {
@@ -299,10 +298,10 @@ int main(){
 			for (iter2 = Ghosts.begin(); iter2 != Ghosts.end(); iter2++) {
 				(*iter2)->draw();
 			}
-			if (move[up])al_draw_bitmap_region(PacMan, cellNUM * 20, 0, 20, 20, X - 10, Y - 10, NULL);
-			else if (move[down])al_draw_bitmap_region(PacMan, cellNUM * 20, 2, 20, 20, X - 10, Y - 10, NULL);
-			else if (move[left])al_draw_bitmap_region(PacMan, cellNUM * 20, 1, 20, 20, X - 10, Y - 10, NULL);
-			else if (move[right])al_draw_bitmap_region(PacMan, cellNUM * 20, 3, 20, 20, X - 10, Y - 10, NULL);
+			/*E*/if (move[up])al_draw_bitmap_region(PacMan, cellNUM * 20, 0, 20, 20, X - 10, Y - 10, NULL);
+			else if (move[down])al_draw_bitmap_region(PacMan, cellNUM * 20, 40, 20, 20, X - 10, Y - 10, NULL);
+			else if (move[left])al_draw_bitmap_region(PacMan, cellNUM * 20, 20, 20, 20, X - 10, Y - 10, NULL);
+			else if (move[right])al_draw_bitmap_region(PacMan, cellNUM * 20, 60, 20, 20, X - 10, Y - 10, NULL);
 			else al_draw_filled_circle(X, Y, 9, al_map_rgb(255, 255, 0));
 			al_flip_display();
 			R1.Change();
@@ -320,22 +319,12 @@ int main(){
 			}
 			if (R1.getColor('B') == 255)QColor = false;
 		}
-		tiker++;
-		if (tiker == 2)tiker = 0;
-		if (tiker == 0 && loop)cellNUM--;
-		else if (tiker == 0)cellNUM++;
-		if (cellNUM == 8)loop = true;
+		if (loop)cellNUM--;
+		else cellNUM++;
+		if (cellNUM == 7)loop = true;
 		else if (cellNUM == 0)loop = false;
 	}
 	al_destroy_display(display);
-}
-
-bool TURN(int Xpos, int Ypos, int direction){
-	/*E*/if (direction == up && !(MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] >= V && MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] <= B))return true;
-	else if (direction == down && !(MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] >= V && MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] <= B))return true;
-	else if (direction == left && !(MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] >= V && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] <= B))return true;
-	else if (direction == right && !(MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] >= V && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] <= B))return true;
-	return false;
 }
 
 bool COLLISION(int Xpos, int Ypos, int direction) {

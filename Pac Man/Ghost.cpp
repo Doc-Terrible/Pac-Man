@@ -38,7 +38,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 	/*E*/if (y < Ypos) {
 		/* Right */
 		/*E*/if (x > Xpos) {
-			/*E*/if (UP && RIGHT && !(moving2[down] || moving2[left])) {
+			/*E*/if (!UP && !RIGHT && !(moving2[down] || moving2[left])) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -53,7 +53,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 				}
 				printf(" flag 1");
 			}
-			else if (UP && !moving2[down]) {
+			else if (!UP && !moving2[down]) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -61,7 +61,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 				moving2[up] = true;
 				printf(" flag 2");
 			}
-			else if (RIGHT && !moving2[left]) {
+			else if (!RIGHT && !moving2[left]) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -72,7 +72,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 		}
 		/* Left */
 		else if (x < Xpos) {
-			/*E*/if (UP && LEFT && !(moving2[down] || moving2[right])) {
+			/*E*/if (!UP && !LEFT && !(moving2[down] || moving2[right])) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -87,7 +87,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 				}
 				printf(" flag 4");
 			}
-			else if (UP && !moving2[down]) {
+			else if (!UP && !moving2[down]) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -95,7 +95,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 				moving2[up] = true;
 				printf(" flag 5");
 			}
-			else if (LEFT && !moving2[right]) {
+			else if (!LEFT && !moving2[right]) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -109,7 +109,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 	else if (y > Ypos) {
 		/* Right */
 		/*E*/if (x > Xpos) {
-			/*E*/if (DOWN && RIGHT && !(moving2[up] || moving2[left])) {
+			/*E*/if (!DOWN && !RIGHT && !(moving2[up] || moving2[left])) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -124,7 +124,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 				}
 				printf(" flag 7");
 			}
-			else if (DOWN && !moving2[up]) {
+			else if (!DOWN && !moving2[up]) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -132,7 +132,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 				moving2[down] = true;
 				printf(" flag 8");
 			}
-			else if (RIGHT && !moving2[left]) {
+			else if (!RIGHT && !moving2[left]) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -143,7 +143,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 		}
 		/* Left */
 		else if (x < Xpos) {
-			/*E*/if (DOWN && LEFT && !(moving2[up] || moving2[right])) {
+			/*E*/if (!DOWN && !LEFT && !(moving2[up] || moving2[right])) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -158,7 +158,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 				}
 				printf(" flag 10");
 			}
-			else if (DOWN && !moving2[up]) {
+			else if (!DOWN && !moving2[up]) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -166,7 +166,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 				moving2[down] = true;
 				printf(" flag 11");
 			}
-			else if (LEFT && !moving2[right]) {
+			else if (!LEFT && !moving2[right]) {
 				for (int i = 0; i < 4; i++) {
 					moving[i] = false;
 				}
@@ -178,7 +178,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 	}
 	/* if player Y and Ghost Y is same */
 	else if (!(y > Ypos || y < Ypos)) {
-		/*E*/if (x < Xpos && LEFT && !moving2[right]) {
+		/*E*/if (x < Xpos && !LEFT && !moving2[right]) {
 			for (int i = 0; i < 4; i++) {
 				moving[i] = false;
 			}
@@ -186,7 +186,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 			moving2[left] = true;
 			printf(" flag 13");
 		}
-		else if (x > Xpos && RIGHT && !moving2[left]) {
+		else if (x > Xpos && !RIGHT && !moving2[left]) {
 			for (int i = 0; i < 4; i++) {
 				moving[i] = false;
 			}
@@ -197,7 +197,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 	}
 	/* if player X and Ghost X is same */
 	else if (!(x > Xpos || x < Xpos)) {
-		/*E*/if (y < Ypos && UP && !moving2[down]) {
+		/*E*/if (y < Ypos && !UP && !moving2[down]) {
 			for (int i = 0; i < 4; i++) {
 				moving[i] = false;
 			}
@@ -205,7 +205,7 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 			moving2[up] = true;
 			printf(" flag 15");
 		}
-		else if (y > Ypos && DOWN && !moving2[up]) {
+		else if (y > Ypos && !DOWN && !moving2[up]) {
 			for (int i = 0; i < 4; i++) {
 				moving[i] = false;
 			}
@@ -218,10 +218,10 @@ void Ghost::turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT){
 		bool run = true;
 		int UDLorR = rand() % 4;
 		while (run) {
-			/*E*/if (UP && UDLorR == up && !moving2[down])UDLorR = rand() % 4;
-			else if (DOWN && UDLorR == down && !moving2[up])UDLorR = rand() % 4;
-			else if (RIGHT && UDLorR == left && !moving2[right])UDLorR = rand() % 4;
-			else if (LEFT && UDLorR == right && !moving2[left])UDLorR = rand() % 4;
+			/*E*/if (!UP && UDLorR == up && !moving2[down])UDLorR = rand() % 4;
+			else if (!DOWN && UDLorR == down && !moving2[up])UDLorR = rand() % 4;
+			else if (!RIGHT && UDLorR == left && !moving2[right])UDLorR = rand() % 4;
+			else if (!LEFT && UDLorR == right && !moving2[left])UDLorR = rand() % 4;
 			else run = false;
 		}
 		for (int i = 0; i < 4; i++) {
