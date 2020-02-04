@@ -19,9 +19,9 @@ int MAP[36][36]{
 	V ,P ,V ,V ,P ,TL,H ,H ,TR,P ,V ,V ,P ,TL,H ,H ,H ,TR,P ,TL,H ,H ,H ,TR,PP,TL,H ,TR,P ,V ,V ,P ,V ,V ,P ,V ,
 	V ,P ,V ,V ,P ,V ,TL,H ,BR,P ,BL,BR,P ,BL,H ,H ,H ,BR,P ,BL,H ,H ,H ,BR,P ,BL,H ,BR,P ,V ,V ,P ,BL,BR,P ,V ,
 	V ,P ,V ,V ,P ,V ,V ,CP,P ,CP,P ,P ,CP,P ,P ,P ,P ,P ,CP,P ,P ,CP,P ,P ,CP,P ,P ,P ,CP,V ,V ,CP,P ,P ,CP,V ,
-	V ,P ,V ,V ,P ,V ,V ,P ,TL,H ,H ,H ,H ,H ,H ,H ,H ,TR,P ,TL,TR,P ,TL,H ,H ,H ,H ,H ,H ,BR,BL,H ,H ,TR,P ,V ,
-	V ,P ,BL,BR,P ,BL,BR,P ,BL,H ,H ,H ,H ,H ,H ,H ,H ,BR,P ,V ,V ,P ,V ,V ,TL,H ,H ,H ,H ,H ,H ,H ,TR,V ,P ,V ,
-	V ,CP,P ,P ,CP,P ,P ,CP,P ,P ,P ,P ,P ,P ,P ,P ,P ,P ,CP,V ,V ,P ,V ,V ,V ,CP,P ,P ,PP,P ,P ,CP,V ,V ,P ,V ,
+	V ,P ,V ,V ,P ,V ,V ,P ,TL,H ,H ,H ,H ,H ,H ,H ,H ,TR,P ,TL,TR,P ,TL,H ,H ,H ,H ,TR,P ,V ,BL,H ,H ,TR,P ,V ,
+	V ,P ,BL,BR,P ,BL,BR,P ,BL,H ,H ,H ,H ,H ,H ,H ,H ,BR,P ,V ,V ,P ,V ,V ,TL,H ,H ,BR,P ,BL,H ,H ,TR,V ,P ,V ,
+	V ,CP,P ,P ,CP,P ,P ,CP,P ,P ,P ,P ,P ,P ,P ,P ,P ,P ,CP,V ,V ,P ,V ,V ,V ,CP,P ,PP,CP,P ,P ,CP,V ,V ,P ,V ,
 	V ,P ,TL,H ,H ,H ,TR,P ,TL,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,BR,V ,P ,V ,V ,V ,P ,TL,H ,H ,H ,TR,P ,V ,V ,P ,V ,
 	BR,P ,BL,H ,H ,H ,BR,P ,BL,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,BR,P ,BL,H ,BR,P ,BL,H ,H ,H ,BR,P ,BL,BR,P ,BL,
 	WL,CP,P ,P ,P ,P ,P ,CP,P ,P ,P ,P ,P ,P ,CP,P ,P ,CP,CP,P ,P ,CP,P ,P ,P ,CP,P ,P ,P ,P ,P ,CP,P ,P ,CP,WR,
@@ -46,7 +46,7 @@ int MAP[36][36]{
 	BL,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,H ,BR,
 };
 /* collision */
-bool COLLISION(int Xpos, int Ypos, int direction);
+bool COLLISION(int Xpos, int Ypos, int direction, char type);
 
 int main(){
 	srand(time(NULL));
@@ -138,9 +138,8 @@ int main(){
 	}
 
 	std::vector<Ghost*> Ghosts;
-	std::vector<Ghost*>::iterator iter2;
-	Ghost* NewGhost = new Ghost((34 * 20) + 10, (1 * 20) + 10, 'B');
-	Ghosts.push_back(NewGhost);
+	Ghost GR((16 * 20) + 10, (18 * 20) + 10, 'B');
+	Ghost GP((16 * 20) + 10, (19 * 20) + 10, 'P');
 
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
@@ -157,7 +156,7 @@ int main(){
 		if (ev.type == ALLEGRO_EVENT_TIMER) {
 			if ((X - 10) % 20 == 0 && (Y - 10) % 20 == 0) {
 				if (MAP[(Y - 10) / 20][(X - 10) / 20] == CP || MAP[(Y - 10) / 20][(X - 10) / 20] == CE) {
-					/*E*/if (key[up] && !COLLISION(X, Y, up)) {
+					/*E*/if (key[up] && !COLLISION(X, Y, up, 'P')) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -165,7 +164,7 @@ int main(){
 						move[up] = true;
 						move2[up] = true;
 					}
-					else if (key[down] && !COLLISION(X, Y, down)) {
+					else if (key[down] && !COLLISION(X, Y, down, 'P')) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -173,7 +172,7 @@ int main(){
 						move[down] = true;
 						move2[down] = true;
 					}
-					else if (key[left] && !COLLISION(X, Y, left)) {
+					else if (key[left] && !COLLISION(X, Y, left, 'P')) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -181,7 +180,7 @@ int main(){
 						move[left] = true;
 						move2[left] = true;
 					}
-					else if (key[right] && !COLLISION(X, Y, right)) {
+					else if (key[right] && !COLLISION(X, Y, right, 'P')) {
 						for (int i = 0; i < 4; i++) {
 							move[i] = false;
 							move2[i] = false;
@@ -199,24 +198,30 @@ int main(){
 			else if (move[right] && move2[right])X += Speed;
 
 			/* ghosts */
-			for (iter2 = Ghosts.begin(); iter2 != Ghosts.end(); iter2++) {
-				if (((*iter2)->GetX() - 10) % 20 == 0 && ((*iter2)->GetY() - 10) % 20 == 0) {
-					if (MAP[((*iter2)->GetY() - 10) / 20][((*iter2)->GetX() - 10) / 20] == CP || MAP[((*iter2)->GetY() - 10) / 20][((*iter2)->GetX() - 10) / 20] == CE) {
-						(*iter2)->turn(X, Y, COLLISION((*iter2)->GetX(), (*iter2)->GetY(), up), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), down), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), left), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), right));
-					}
+			if ((GR.GetX() - 10) % 20 == 0 && (GR.GetY() - 10) % 20 == 0) {
+				if (MAP[(GR.GetY() - 10) / 20][(GR.GetX() - 10) / 20] == CP || MAP[(GR.GetY() - 10) / 20][(GR.GetX() - 10) / 20] == CE) {
+					if (GR.GetX() > 320 && GR.GetX() < 380 && GR.GetY() > 360 && GR.GetY() < 380)GR.turn(340, 320, power, COLLISION(GR.GetX(), GR.GetY(), up, 'G'), COLLISION(GR.GetX(), GR.GetY(), down, 'G'), COLLISION(GR.GetX(), GR.GetY(), left, 'G'), COLLISION(GR.GetX(), GR.GetY(), right, 'G'));
+					else GR.turn(X, Y, power, COLLISION(GR.GetX(), GR.GetY(), up, 'G'), COLLISION(GR.GetX(), GR.GetY(), down, 'G'), COLLISION(GR.GetX(), GR.GetY(), left, 'G'), COLLISION(GR.GetX(), GR.GetY(), right, 'G'));
 				}
-				(*iter2)->move();
 			}
+			GR.move();
+			if ((GP.GetX() - 10) % 20 == 0 && (GP.GetY() - 10) % 20 == 0) {
+				if (MAP[(GP.GetY() - 10) / 20][(GP.GetX() - 10) / 20] == CP || MAP[(GP.GetY() - 10) / 20][(GP.GetX() - 10) / 20] == CE) {
+					if (GP.GetX() > 320 && GP.GetX() < 380 && GP.GetY() > 360 && GP.GetY() < 380)GP.turn(340, 320, power, COLLISION(GP.GetX(), GP.GetY(), up, 'G'), COLLISION(GP.GetX(), GP.GetY(), down, 'G'), COLLISION(GP.GetX(), GP.GetY(), left, 'G'), COLLISION(GP.GetX(), GP.GetY(), right, 'G'));
+					else GP.turn(GR.GetX(), GR.GetY(), power, COLLISION(GP.GetX(), GP.GetY(), up, 'G'), COLLISION(GP.GetX(), GP.GetY(), down, 'G'), COLLISION(GP.GetX(), GP.GetY(), left, 'G'), COLLISION(GP.GetX(), GP.GetY(), right, 'G'));
+				}
+			}
+			GP.move();
 			
 			redraw = true;
 		}
 
 		/* player collision */
 		if ((X - 10) % 20 == 0 && (Y - 10) % 20 == 0) {
-			if (COLLISION(X, Y, up))move2[up] = false;
-			if (COLLISION(X, Y, down))move2[down] = false;
-			if (COLLISION(X, Y, left))move2[left] = false;
-			if (COLLISION(X, Y, right))move2[right] = false;
+			if (COLLISION(X, Y, up, 'P'))move2[up] = false;
+			if (COLLISION(X, Y, down, 'P'))move2[down] = false;
+			if (COLLISION(X, Y, left, 'P'))move2[left] = false;
+			if (COLLISION(X, Y, right, 'P'))move2[right] = false;
 
 			/*E*/if (MAP[(Y - 10) / 20][(X - 10) / 20] == P) {
 				MAP[(Y - 10) / 20][(X - 10) / 20] = E;
@@ -235,11 +240,12 @@ int main(){
 		}
 		
 		/* ghosts collision */
-		for (iter2 = Ghosts.begin(); iter2 != Ghosts.end(); iter2++) {
-			if (((*iter2)->GetX() - 10) % 20 == 0 && ((*iter2)->GetY() - 10) % 20 == 0) {
-				(*iter2)->collision(COLLISION((*iter2)->GetX(), (*iter2)->GetY(), up), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), down), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), left), COLLISION((*iter2)->GetX(), (*iter2)->GetY(), right));
+		if ((GR.GetX() - 10) % 20 == 0 && (GR.GetY() - 10) % 20 == 0) {
+				GR.collision(COLLISION(GR.GetX(), GR.GetY(), up, 'G'), COLLISION(GR.GetX(), GR.GetY(), down, 'G'), COLLISION(GR.GetX(), GR.GetY(), left, 'G'), COLLISION(GR.GetX(), GR.GetY(), right, 'G'));
 			}
-		}
+		if ((GP.GetX() - 10) % 20 == 0 && (GP.GetY() - 10) % 20 == 0) {
+				GP.collision(COLLISION(GP.GetX(), GP.GetY(), up, 'G'), COLLISION(GP.GetX(), GP.GetY(), down, 'G'), COLLISION(GP.GetX(), GP.GetY(), left, 'G'), COLLISION(GP.GetX(), GP.GetY(), right, 'G'));
+			}
 
 		/* when key is pressed */
 		if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
@@ -295,9 +301,8 @@ int main(){
 			for (iter = walls.begin(); iter != walls.end(); iter++) {
 				(*iter)->draw(R1.getColor('R'),R1.getColor('G'),R1.getColor('B'));
 			}
-			for (iter2 = Ghosts.begin(); iter2 != Ghosts.end(); iter2++) {
-				(*iter2)->draw();
-			}
+			GR.draw(power);
+			GP.draw(power);
 			/*E*/if (move[up])al_draw_bitmap_region(PacMan, cellNUM * 20, 0, 20, 20, X - 10, Y - 10, NULL);
 			else if (move[down])al_draw_bitmap_region(PacMan, cellNUM * 20, 40, 20, 20, X - 10, Y - 10, NULL);
 			else if (move[left])al_draw_bitmap_region(PacMan, cellNUM * 20, 20, 20, 20, X - 10, Y - 10, NULL);
@@ -327,10 +332,18 @@ int main(){
 	al_destroy_display(display);
 }
 
-bool COLLISION(int Xpos, int Ypos, int direction) {
-	/*E*/if (direction == up && MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] >= V && MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] <= B)return true;
-	else if (direction == down && MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] >= V && MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] <= B)return true;
-	else if (direction == left && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] >= V && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] <= B)return true;
-	else if (direction == right && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] >= V && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] <= B)return true;
+bool COLLISION(int Xpos, int Ypos, int direction, char type) {
+	if (type == 'P') {
+		/*E*/if (direction == up && MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] >= V && MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] <= B)return true;
+		else if (direction == down && MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] >= V && MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] <= B)return true;
+		else if (direction == left && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] >= V && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] <= B)return true;
+		else if (direction == right && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] >= V && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] <= B)return true;
+	}
+	else if (type == 'G') {
+		/*E*/if (direction == up && MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] >= WL && MAP[((Ypos - 10) / 20) - 1][(Xpos - 10) / 20] <= BR)return true;
+		else if (direction == down && MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] >= WL && MAP[((Ypos - 10) / 20) + 1][(Xpos - 10) / 20] <= B)return true;
+		else if (direction == left && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] >= WL && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) - 1] <= B)return true;
+		else if (direction == right && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] >= WL && MAP[(Ypos - 10) / 20][((Xpos - 10) / 20) + 1] <= B)return true;
+	}
 	return false;
 }

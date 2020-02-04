@@ -11,7 +11,7 @@
 
 enum THINGS {
 	E, //nothing
-	WL,
+	WL, 
 	WR,
 	V, //vertical wall
 	H, //horizontal wall

@@ -16,7 +16,7 @@ public:
 	bool eaten();
 	void collision(bool UP, bool DOWN, bool LEFT, bool RIGHT);
 	void move();
-	void turn(int x, int y, bool UP, bool DOWN, bool LEFT, bool RIGHT);
-	void draw();
+	void turn(int x, int y, bool power, bool UP, bool DOWN, bool LEFT, bool RIGHT);
+	void draw(bool power);
 };
 
